@@ -1,126 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bravado Iterable auto-login link generator</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, Helvetica Neue, Oxygen;
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+          Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, Helvetica Neue,
+          Oxygen;
+      }
 
-        }
+      html,
+      body {
+        height: 100%;
+        background: #ebecf0;
 
-        html,
-        body {
-            height: 100%;
-            background: #EBECF0;
-        }
+        --error: #f03838;
+        --border: #d6d8e1;
+        --focused: #3254ec;
+        --white: #fff;
+      }
 
-        .form {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            height: 100%;
+      .form {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        height: 80%;
+        min-height: 500px;
+        max-width: 800px;
+        width: 90%;
+        margin: 24px auto;
+        padding: 24px;
+        background: var(--white);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+        border-radius: 8px;
+      }
 
-        }
+      .form__title {
+        font-weight: normal;
+        font-size: 28px;
+        margin-bottom: 20px;
+      }
 
-        .form--title {
-            font-weight: normal;
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
+      .form__item {
+        width: 100%;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 24px;
+      }
 
-        .form--item {
-            width: 100%;
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-            max-width: 800px;
-            width: 90%;
-        }
+      .form__label {
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
 
-        .form--label {
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
+      .form__url {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        font-size: 30px;
+        margin-bottom: 10px;
+        padding: 10px;
+        display: inline-block;
+        outline: none;
+        appearance: none;
+      }
 
-        .form--url {
-            border: 1px solid #D6D8E1;
-            font-size: 30px;
-            margin-bottom: 20px;
-            padding: 10px;
-            border-radius: 12px;
-            display: inline-block;
-        }
+      .form__url:focus-visible {
+        border-color: var(--focused);
+        box-shadow: 0 0 0 2px rgba(51, 85, 236, 0.15);
+      }
 
-        .form--url:focus-visible {
-            outline: none;
-            border-color: #5E79C5;
-        }
+      .form__url--invalid {
+        color: var(--error);
+      }
 
-        .form--url:invalid {
-            border-color: red;
-            color: red;
-        }
+      .form__warning {
+        display: none;
+        font-size: 12px;
+        color: var(--error);
+      }
 
-        .form--warning {
-            display: none;
-        }
+      .form__warning--visible {
+        display: block;
+      }
 
-        .form--warning.__show {
-            display: block;
-        }
+      .form__result {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px;
+        border-radius: 12px;
+        outline: none;
+        appearance: none;
+      }
 
-        .form--result {
-            padding: 10px;
-            border-radius: 12px;
-        }
+      .form__actions {
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
+
+      .form__button {
+        align-self: flex-start;
+        font-size: 15px;
+        line-height: 1.6;
+        padding: 7px 12px;
+        background: var(--focused);
+        color: var(--white);
+        border-color: var(--focused);
+        border: 1px solid var(--focused);
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .form__button--disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .form__success {
+        font-size: 18px;
+        margin-left: 24px;
+        display: none;
+      }
+
+      .form__success--visible {
+        display: inline-block;
+      }
     </style>
+  </head>
 
-</head>
-
-<body>
+  <body>
     <form class="form">
-        <h1 class="form--title">Bravado Iterable auto-login link generator</h1>
-        <div class="form--item">
-            <label for="url" class="form--label">Bravado URL (https://bravado.co/)</label>
-            <input placeholder="https://bravado.co/" type="url" class="form--url" id="url" name="url">
-            <div class="form--warning">It's not a bravado link. It must starts with <span
-                    style="font-family: 'Courier New', Courier, monospace; font-weight: bold;">https://bravado.co/</span>
-            </div>
+      <h1 class="form__title">Bravado Iterable auto-login link generator</h1>
+      <div class="form__item">
+        <label for="url" class="form__label"
+          >Bravado URL (https://bravado.co/)</label
+        >
+        <input
+          placeholder="https://bravado.co/"
+          type="url"
+          class="form__url"
+          id="url"
+          name="url"
+        />
+        <div class="form__warning">
+          It's not a valid Bravado link. It should start with
+          <span
+            style="
+              font-family: 'Courier New', Courier, monospace;
+              font-weight: bold;
+            "
+            >https://bravado.co/</span
+          >
         </div>
-        <div class="form--item">
-            <label class="form--label" for="result">Result</label>
-            <textarea class="form--result" id="result" name="result" disabled readonly></textarea>
-        </div>
-
+      </div>
+      <div class="form__item">
+        <label class="form__label" for="result">Result</label>
+        <textarea
+          class="form__result"
+          id="result"
+          name="result"
+          readonly
+        ></textarea>
+      </div>
+      <div class="form__actions">
+        <button id="button" class="form__button form__button--disabled">
+          Copy
+        </button>
+        <div class="form__success">Copied to clipboard!</div>
+      </div>
     </form>
 
-
-
     <script>
-        const $url = document.querySelector('.form--url');
-        const $result = document.querySelector('.form--result');
-        const $warning = document.querySelector('.form--warning');
+      const BASE_URL = "https://bravado.co";
+      const INPUT_BASE_CLASS_NAME = "form__url";
+      const INVALID_INPUT_BASE_CLASS_NAME = "form__url--invalid";
+      const WARNING_BASE_CLASS_NAME = "form__warning";
+      const VISIBLE_WARNING_BASE_CLASS_NAME = "form__warning--visible";
+      const SUCCESS_BASE_CLASS_NAME = "form__success";
+      const VISIBLE_SUCCESS_BASE_CLASS_NAME = "form__success--visible";
 
-        $url.addEventListener('input', (event) => {
-            $result.value = '';
-            $warning.classList.remove('__show');
-            if (!$url.value || !$url.validity.valid) return;
+      const DISABLED_BUTTON_BASE_CLASS_NAME = "form__button--disabled";
 
-            if (!$url.value.startsWith('https://bravado.co/')) {
-                $warning.classList.add('__show');
-            }
+      const $url = document.querySelector(`.${INPUT_BASE_CLASS_NAME}`);
+      const $warning = document.querySelector(`.${WARNING_BASE_CLASS_NAME}`);
+      const $result = document.querySelector(".form__result");
+      const $button = document.getElementById("button");
+      const $success = document.querySelector(`.${SUCCESS_BASE_CLASS_NAME}`);
 
-            $result.value =
-                `https://bravado.co/users/redirect?email={{user_email}}&private_hash={{email_hash}}&url=${encodeURIComponent($url.value)}`
-        });
+      const isUrlValid = (url) => {
+        return /^https:\/\/bravado.co((\/|\?).*)?$/.test(url);
+      };
+
+      const copyToClipboard = (e) => {
+        e.preventDefault();
+
+        if (!$result.value) return;
+
+        try {
+          $result.select();
+          document.execCommand("copy");
+          $success.classList.add(VISIBLE_SUCCESS_BASE_CLASS_NAME);
+        } catch (e) {
+          console.log(e);
+        }
+      };
+
+      $button.addEventListener("click", copyToClipboard);
+
+      $url.addEventListener("input", (event) => {
+        $result.value = "";
+        $warning.classList.remove(VISIBLE_WARNING_BASE_CLASS_NAME);
+        $url.classList.remove(INVALID_INPUT_BASE_CLASS_NAME);
+        $success.classList.remove(VISIBLE_SUCCESS_BASE_CLASS_NAME);
+        $button.classList.remove(DISABLED_BUTTON_BASE_CLASS_NAME);
+
+        if (!$url.value.trim()) return;
+
+        if (!isUrlValid($url.value)) {
+          $warning.classList.add(VISIBLE_WARNING_BASE_CLASS_NAME);
+          $url.classList.add(INVALID_INPUT_BASE_CLASS_NAME);
+          $button.classList.add(DISABLED_BUTTON_BASE_CLASS_NAME);
+          return;
+        }
+
+        $result.value = `${BASE_URL}/users/redirect?email={{user_email}}&private_hash={{email_hash}}&url=${encodeURIComponent(
+          $url.value
+        )}`;
+      });
     </script>
-</body>
-
+  </body>
 </html>
